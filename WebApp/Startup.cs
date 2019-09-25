@@ -22,8 +22,6 @@ namespace BreachedEmails
     {
         private IClusterClient CreateOrleansClient()
         {
-//            try
- //           {
                 var clientBuilder = new ClientBuilder()
                 .UseLocalhostClustering()
                 .Configure<ClusterOptions>(options =>
@@ -34,18 +32,9 @@ namespace BreachedEmails
                 .ConfigureLogging(logging => logging.AddConsole());
 
                 var client = clientBuilder.Build();
-                client.Connect().Wait(); //TU PROBAJ TRY CACTCH
+                client.Connect().Wait(); 
 
                 return client;
-//           }
-//            catch 
-//            {
-//                throw new HttpResponseException();
-//                return  HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
-             //   throw new HttpRequestException();// Exception("Silo is not running!");
-                //return
-                //throw new NotImplementedException("Silo is not running!");
- //           }
         }
 
         public Startup(IConfiguration configuration)

@@ -26,7 +26,7 @@ namespace BreachedEmails
                 State.Email = new HashSet<string>();
                 syncDatabaseStatus = false;
             }
-            this.RegisterTimer(SaveToDatabase, null, TimeSpan.FromTicks(1), TimeSpan.FromMinutes(5));
+            this.RegisterTimer(SaveToDatabase, null, TimeSpan.FromTicks(1), TimeSpan.FromMinutes(1));
             return base.OnActivateAsync();
         }
 
@@ -76,9 +76,9 @@ namespace BreachedEmails
                     base.WriteStateAsync();
                     syncDatabaseStatus = false;
                 }
-                catch 
+                catch (Exception ex)
                 {
-                    throw new Exception("Save error.");
+                    throw new Exception(ex.Message);
                 }    
             }
             return Task.CompletedTask;

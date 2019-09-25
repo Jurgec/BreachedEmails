@@ -5,8 +5,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
+/*using System;
+using System.Web;
+using System.Net.Http;
 using System;
-
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using System.Web.Http.Filters;*/
 
 
 namespace BreachedEmails
@@ -15,7 +22,9 @@ namespace BreachedEmails
     {
         private IClusterClient CreateOrleansClient()
         {
-            var clientBuilder = new ClientBuilder()
+//            try
+ //           {
+                var clientBuilder = new ClientBuilder()
                 .UseLocalhostClustering()
                 .Configure<ClusterOptions>(options =>
                 {
@@ -24,10 +33,19 @@ namespace BreachedEmails
                 })
                 .ConfigureLogging(logging => logging.AddConsole());
 
-            var client = clientBuilder.Build();
-            client.Connect().Wait();
+                var client = clientBuilder.Build();
+                client.Connect().Wait(); //TU PROBAJ TRY CACTCH
 
-            return client;
+                return client;
+//           }
+//            catch 
+//            {
+//                throw new HttpResponseException();
+//                return  HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
+             //   throw new HttpRequestException();// Exception("Silo is not running!");
+                //return
+                //throw new NotImplementedException("Silo is not running!");
+ //           }
         }
 
         public Startup(IConfiguration configuration)

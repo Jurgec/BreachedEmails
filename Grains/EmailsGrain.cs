@@ -17,14 +17,14 @@ namespace BreachedEmails
     public class EmailsGrain : Orleans.Grain<StateEmail>, IEmails
     {
         private readonly ILogger logger;
-        private long syncDatabaseStatus;
+        private bool syncDatabaseStatus;
 
         public override Task OnActivateAsync()
         {
             if (State.Email == null)
             {
                 State.Email = new HashSet<string>();
-                syncDatabaseStatus = 0;
+                syncDatabaseStatus = false;
             }
             this.RegisterTimer(SaveToDatabase, null, TimeSpan.FromTicks(1), TimeSpan.FromMinutes(5));
             return base.OnActivateAsync();
@@ -40,39 +40,46 @@ namespace BreachedEmails
         {
             this.logger = logger;
         }
-        Task<string> IEmails.GET(string email)
+        Task<bool> IEmails.GET(string email)
         {
             if(State.Email.Contains(email))
             {
-                return Task.FromResult("OK");
+                return Task.FromResult(true);
             }
             else
             {
-                return Task.FromResult("NotFound");
+                return Task.FromResult(false);
             }
         }
 
 
-        Task<string> IEmails.Create(string email)
+        Task<bool> IEmails.Create(string email)
         {
             if (State.Email.Contains(email))
             {
-                return Task.FromResult("Conflict");
+                return Task.FromResult(false);
             }
             else
             {
                 State.Email.Add(email);
-                syncDatabaseStatus = 1;
-                return Task.FromResult("Created");
+                syncDatabaseStatus = true;
+                return Task.FromResult(true);
             }
         }
 
         private Task SaveToDatabase(object arg)
         {
-            if(syncDatabaseStatus==1)
+            while(syncDatabaseStatus)
             {
-                syncDatabaseStatus = 0;
-                return base.WriteStateAsync();
+                try
+                {
+                    base.WriteStateAsync();
+                    syncDatabaseStatus = false;
+                }
+                catch 
+                {
+                    throw new Exception("Save error.");
+                }    
             }
             return Task.CompletedTask;
         }

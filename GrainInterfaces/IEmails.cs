@@ -7,7 +7,7 @@ namespace BreachedEmails
 {
     public interface IEmails : Orleans.IGrainWithStringKey
     {
-        Task<string> GET(string email);
-        Task<string> Create(string email);
+        Task<bool> GET(string email);
+        Task<bool> Create(string email);
     }
 }

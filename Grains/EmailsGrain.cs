@@ -26,14 +26,14 @@ namespace BreachedEmails
                 State.Email = new HashSet<string>();
                 syncDatabaseStatus = false;
             }
-            this.RegisterTimer(SaveToDatabase, null, TimeSpan.FromTicks(1), TimeSpan.FromMinutes(5));
+            this.RegisterTimer(SaveToDatabaseAsync, null, TimeSpan.FromTicks(1), TimeSpan.FromMinutes(5));
             return base.OnActivateAsync();
         }
 
-        public override Task OnDeactivateAsync()
+        public override async Task OnDeactivateAsync()
         {
-            SaveToDatabase(this);
-            return base.OnDeactivateAsync();
+            await SaveToDatabaseAsync(null);
+            //return base.OnDeactivateAsync();
         }
 
         public EmailsGrain(ILogger<EmailsGrain> logger)
@@ -67,22 +67,21 @@ namespace BreachedEmails
             }
         }
 
-        private Task SaveToDatabase(object arg)
+        private async Task SaveToDatabaseAsync(object arg)
         {
-            while(syncDatabaseStatus)
+            if(syncDatabaseStatus)
             {
                 try
                 {
-                    base.WriteStateAsync();
+                    await base.WriteStateAsync();
                     syncDatabaseStatus = false;
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
-                    continue;
                 }    
             }
-            return Task.CompletedTask;
+            //return Task.CompletedTask;
         }
 
     }
